@@ -34,5 +34,40 @@ func main() {
 		return c.JSON(todos)
 	})
 
+	app.Patch("/api/todos/:id/done", func(c *fiber.Ctx) error {
+		id, err := c.ParamsInt("id")
+		if err != nil {
+			return c.Status(401).SendString("Invalid Id")
+		}
+
+		for i, t := range todos {
+			if t.Id == id {
+				todos[i].Done = true
+				break
+			}
+		}
+
+		return c.JSON(todos)
+	})
+
+	app.Get("/api/todos", func(c *fiber.Ctx) error {
+		return c.JSON(todos)
+	})
+
+	app.Get("/api/todos/:id", func(c *fiber.Ctx) error {
+		id, err := c.ParamsInt("id")
+		if err != nil {
+			return c.Status(401).SendString("Invalid Id")
+		}
+		todo := Todo{}
+		for i, t := range todos {
+			if t.Id == id {
+				todo = todos[i]
+				break
+			}
+		}
+		return c.JSON(todo)
+	})
+
 	log.Fatal(app.Listen(":4000"))
 }
